@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rakhi - Sab Kuch Ghar Tak</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: linear-gradient(#ffe6f0, #fff3e6);
+    }
+    header {
+      background: linear-gradient(90deg, #ff6a00, #ff99cc);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+    }
+    .logo::before {
+      content: "🎁";
+      margin-right: 10px;
+    }
+    .cart {
+      font-size: 18px;
+      cursor: pointer;
+      position: relative;
+    }
+    .cart::after {
+      content: attr(data-count);
+      position: absolute;
+      top: -10px;
+      right: -15px;
+      background: #ffd700;
+      color: black;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .products {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+    }
+    .product-card {
+      background: white;
+      width: 180px;
+      margin: 10px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255, 0, 128, 0.1);
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 25px rgba(255, 153, 204, 0.6);
+    }
+    .product-card img {
+      width: 100%;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+    .product-card p {
+      margin: 10px 0;
+      font-weight: bold;
+    }
+    .product-card button {
+      background: #ff4081;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      margin: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .product-card button:hover {
+      background: #e91e63;
+    }
+    .popup {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #ff4081;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      opacity: 0;
+      transition: opacity 0.5s, transform 0.5s;
+      transform: translateY(20px);
+      z-index: 999;
+    }
+    .popup.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Sab Kuch Ghar Tak</div>
+    <div class="cart" id="cart" data-count="0" onclick="window.location.href='cart.html'">🛒 Cart</div>
+  </header>
+
+  <div class="products" id="productList"></div>
+
+  <div class="popup" id="popup">Your product is added to cart ✅</div>
+
+  <script>
+    const products = [
+      { name: "New Stock Rakhi", price: 18, img: "images/rakhi1.jpg" },
+      { name: "Kids Rakhi", price: 40, img: "images/rakhi2.jpg" },
+      { name: "Bhaiya Bhabhi Rakhi", price: 90, img: "images/rakhi3.jpg" },
+      { name: "Combo Pack", price: 150, img: "images/rakhi4.jpg" },
+      { name: "Handmade Rakhi", price: 60, img: "images/rakhi5.jpg" },
+      { name: "Premium Rakhi", price: 120, img: "images/rakhi6.jpg" },
+      { name: "Lumba Rakhi", price: 80, img: "images/rakhi7.jpg" },
+      { name: "Fancy Rakhi", price: 70, img: "images/rakhi8.jpg" },
+      { name: "Bracelet Rakhi", price: 85, img: "images/rakhi9.jpg" },
+      { name: "Eco-Friendly Rakhi", price: 55, img: "images/rakhi10.jpg" }
+    ];
+
+    function loadProducts() {
+      const list = document.getElementById("productList");
+      products.forEach((prod, index) => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+        card.innerHTML = `
+          <img src="${prod.img}" alt="${prod.name}">
+          <p>${prod.name} ₹${prod.price}</p>
+          <button onclick="addToCart(${index})">Add to Cart</button>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    function addToCart(index) {
+      let cart = JSON.parse(localStorage.getItem("cartData")) || [];
+      let found = cart.find(item => item.name === products[index].name);
+      if (found) {
+        found.qty += 1;
+      } else {
+        cart.push({ ...products[index], qty: 1 });
+      }
+      localStorage.setItem("cartData", JSON.stringify(cart));
+
+      updateCartCount();
+      showPopup(products[index].name);
+    }
+
+    function updateCartCount() {
+      let cart = JSON.parse(localStorage.getItem("cartData")) || [];
+      let count = cart.reduce((sum, item) => sum + item.qty, 0);
+      document.getElementById("cart").setAttribute("data-count", count);
+    }
+
+    function showPopup(productName) {
+      const popup = document.getElementById('popup');
+      popup.innerText = `${productName} is added to cart ✅`;
+      popup.classList.add('show');
+      setTimeout(() => {
+        popup.classList.remove('show');
+      }, 2000);
+    }
+
+    // Init
+    loadProducts();
+    updateCartCount();
+  </script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fresh Milk - Sab Kuch Ghar Tak</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #e8f5e9, #fffde7);
+      color: #333;
+    }
+    header {
+      background: linear-gradient(90deg, #ff6a00, #ee0979);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .logo {
+      font-size: 22px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+    }
+    .cart {
+      font-size: 18px;
+      cursor: pointer;
+      position: relative;
+    }
+    .cart::after {
+      content: attr(data-count);
+      position: absolute;
+      top: -10px;
+      right: -15px;
+      background: yellowgreen;
+      color: black;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+    }
+    .gallery {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .gallery img {
+      height: 200px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      transition: transform 0.3s;
+    }
+    .gallery img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    h2 {
+      margin-top: 20px;
+    }
+    .price {
+      font-size: 20px;
+      margin: 10px 0;
+    }
+    .price del {
+      color: #888;
+      margin-right: 10px;
+    }
+    .desc {
+      margin: 15px 0;
+      line-height: 1.6;
+    }
+    .cart-btn {
+      background: linear-gradient(135deg, #ff5722, #ff7043);
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+    .cart-btn:hover {
+      background: linear-gradient(135deg, #e64a19, #ff5722);
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+    .popup {
+      background: #4caf50;
+      color: white;
+      padding: 12px;
+      border-radius: 6px;
+      display: none;
+      margin-top: 15px;
+      animation: fadeIn 0.5s forwards;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    .back-btn {
+      display: inline-block;
+      margin-top: 25px;
+      text-decoration: none;
+      color: #ff5722;
+      font-weight: bold;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">🛍️ Sab Kuch Ghar Tak</div>
+    <div class="cart" id="cart" data-count="0" onclick="window.location.href='cart.html'">🛒 Cart</div>
+  </header>
+
+  <div class="container">
+    <div class="gallery">
+      <img src="images/freshmilk1.png" alt="Milk Photo 1">
+      <img src="images/freshmilk2.png" alt="Milk Photo 2">
+      <img src="images/freshmilk3.png" alt="Milk Photo 3">
+      <img src="images/freshmilk4.png" alt="Milk Photo 4">
+      <img src="images/freshmilk5.png" alt="Milk Photo 5">
+      <img src="images/freshmilk6.png" alt="Milk Photo 6">
+    </div>
+
+    <h2>Fresh Farm Milk</h2>
+    <div class="price"><del>₹60</del> ₹50</div>
+    <div class="desc">
+      Our fresh farm milk is pure, natural, and sourced from healthy cows. It is rich in nutrients, creamy in texture, and perfect for daily use. Enjoy the freshness every day!
+    </div>
+
+    <button class="cart-btn" onclick="addToCart()">Add to Cart</button>
+
+    <div class="popup" id="popup">✅ Product added to cart successfully!</div>
+
+    <a class="back-btn" href="home.html">← Back to Home</a>
+  </div>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem("cartData")) || [];
+
+    function updateCartCount() {
+      let count = cart.reduce((sum, item) => sum + item.qty, 0);
+      document.getElementById("cart").setAttribute("data-count", count);
+    }
+
+    function addToCart() {
+      const product = {
+        name: "Fresh Farm Milk",
+        price: 50,
+        img: "images/milk.png",
+        qty: 1
+      };
+
+      const existing = cart.findIndex(item => item.name === product.name);
+      if (existing >= 0) {
+        cart[existing].qty += 1;
+      } else {
+        cart.push(product);
+      }
+
+      localStorage.setItem("cartData", JSON.stringify(cart));
+      updateCartCount();
+      showPopup();
+    }
+
+    function showPopup() {
+      const popup = document.getElementById("popup");
+      popup.style.display = "block";
+      setTimeout(() => {
+        popup.style.display = "none";
+      }, 2000);
+    }
+
+    updateCartCount();
+  </script>
+</body>
+</html>

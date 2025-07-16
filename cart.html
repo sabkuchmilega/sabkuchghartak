@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cart - Sab Kuch Ghar Tak</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #e8f5e9, #fff3e0);
+      color: #333;
+      overflow-x: hidden;
+    }
+    header {
+      background: linear-gradient(90deg, #4caf50, #ff9800);
+      color: white;
+      text-align: center;
+      padding: 18px;
+      font-size: 26px;
+      font-weight: bold;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      animation: glow 2s infinite alternate;
+    }
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #fff, 0 0 20px #ff9800; }
+      to { text-shadow: 0 0 20px #fff, 0 0 40px #4caf50; }
+    }
+    .cart-container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.1);
+      transition: transform 0.4s, box-shadow 0.4s;
+    }
+    .cart-container:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 0 40px rgba(0,0,0,0.2);
+    }
+    .cart-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 12px;
+      opacity: 0;
+      animation: fadeIn 0.8s forwards;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    .cart-item img {
+      width: 90px;
+      border-radius: 10px;
+      margin-right: 15px;
+      transition: transform 0.4s, box-shadow 0.4s;
+    }
+    .cart-item img:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+    }
+    .cart-item-details {
+      flex: 1;
+    }
+    .cart-item-details div {
+      margin: 5px 0;
+    }
+    .cart-item-controls button {
+      margin: 0 5px;
+      background: linear-gradient(135deg, #4caf50, #81c784);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .cart-item-controls button:hover {
+      transform: scale(1.15);
+      box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
+    }
+    .remove-btn {
+      background: linear-gradient(135deg, #f44336, #e57373) !important;
+      box-shadow: 0 4px 10px rgba(244, 67, 54, 0.3) !important;
+    }
+    .remove-btn:hover {
+      background: linear-gradient(135deg, #d32f2f, #ef5350) !important;
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(244, 67, 54, 0.5) !important;
+    }
+    select, input[type="checkbox"] {
+      margin-top: 12px;
+    }
+    .summary {
+      margin-top: 25px;
+      text-align: right;
+      font-size: 18px;
+    }
+    .summary div {
+      margin: 8px 0;
+    }
+    button.checkout-btn {
+      background: linear-gradient(135deg, #ff5722, #ff7043);
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 25px;
+      font-size: 18px;
+      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(255, 87, 34, 0.4);
+      transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+    button.checkout-btn:hover {
+      background: linear-gradient(135deg, #e64a19, #ff5722);
+      transform: scale(1.07);
+      box-shadow: 0 8px 25px rgba(255, 87, 34, 0.6);
+    }
+  </style>
+</head>
+<body>
+  <header>🛒 Your Cart</header>
+
+  <div class="cart-container" id="cartItems"></div>
+
+  <div class="cart-container">
+    <div>
+      <label for="village"><strong>Select Your Village:</strong></label><br>
+      <select id="village" onchange="updateShipping()">
+        <option value="">-- Select --</option>
+        <option value="30">Dhani Peer Wali (₹30)</option>
+        <option value="40">Dhani Kumaran (₹40)</option>
+        <option value="40">Dhani Heran (₹40)</option>
+      </select>
+    </div>
+    <div>
+      <input type="checkbox" id="urgentDelivery" onchange="updateShipping()">
+      <label for="urgentDelivery">Urgent Delivery (45 mins, 2.5x charges)</label>
+    </div>
+
+    <div class="summary">
+      <div>Subtotal: ₹<span id="subtotal">0</span></div>
+      <div>Shipping: ₹<span id="shipping">0</span></div>
+      <div><strong>Total: ₹<span id="total">0</span></strong></div>
+      <button class="checkout-btn" onclick="proceedCheckout()">Checkout</button>
+    </div>
+  </div>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem("cartData")) || [];
+
+    function renderCart() {
+      let container = document.getElementById("cartItems");
+      container.innerHTML = "";
+      if (cart.length === 0) {
+        container.innerHTML = "<p style='text-align:center;font-weight:bold;'>Your cart is empty 🛒</p>";
+        updateTotals();
+        return;
+      }
+      cart.forEach((item, index) => {
+        let div = document.createElement("div");
+        div.className = "cart-item";
+        div.innerHTML = `
+          <img src="${item.img}" alt="${item.name}">
+          <div class="cart-item-details">
+            <div><strong>${item.name}</strong></div>
+            <div>₹${item.price}</div>
+            <div class="cart-item-controls">
+              <button onclick="changeQty(${index}, -1)">-</button>
+              <span class="qty">${item.qty}</span>
+              <button onclick="changeQty(${index}, 1)">+</button>
+              <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+      updateTotals();
+    }
+
+    function changeQty(index, delta) {
+      cart[index].qty += delta;
+      if (cart[index].qty < 1) cart[index].qty = 1;
+      saveCart();
+      renderCart();
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      saveCart();
+      renderCart();
+    }
+
+    function saveCart() {
+      localStorage.setItem("cartData", JSON.stringify(cart));
+    }
+
+    function updateTotals() {
+      let subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+      document.getElementById("subtotal").innerText = subtotal;
+      updateShipping();
+    }
+
+    function updateShipping() {
+      let shippingBase = parseFloat(document.getElementById("village").value) || 0;
+      let urgent = document.getElementById("urgentDelivery").checked;
+      let shippingCost = urgent ? shippingBase * 2.5 : shippingBase;
+      document.getElementById("shipping").innerText = shippingCost;
+
+      let subtotal = parseFloat(document.getElementById("subtotal").innerText);
+      let total = subtotal + shippingCost;
+      document.getElementById("total").innerText = total;
+
+      // Save total in localStorage for next page
+      localStorage.setItem("total", total);
+    }
+
+    function proceedCheckout() {
+      let village = document.getElementById("village").value;
+      if (!village) {
+        alert("Please select your village before proceeding to checkout!");
+        return;
+      }
+      localStorage.setItem("selectedVillage", village);
+      localStorage.setItem("urgentDelivery", document.getElementById("urgentDelivery").checked);
+      window.location.href = "customer-detail.html";
+    }
+
+    renderCart();
+  </script>
+</body>
+</html>

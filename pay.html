@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pay - Sab Kuch Ghar Tak</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #f3f9f1, #fffde7);
+      text-align: center;
+      color: #333;
+    }
+    header {
+      background: linear-gradient(90deg, #4caf50, #ff9800);
+      color: white;
+      padding: 18px;
+      font-size: 26px;
+      font-weight: bold;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .container {
+      padding: 30px;
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+      margin-top: 30px;
+    }
+    .qr-img {
+      width: 250px;
+      margin-top: 20px;
+      cursor: pointer;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      transition: transform 0.3s;
+    }
+    .qr-img:hover {
+      transform: scale(1.05);
+    }
+    .upi-btn, .paid-btn {
+      display: inline-block;
+      margin: 20px 10px;
+      background: linear-gradient(135deg, #4caf50, #81c784);
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .upi-btn:hover, .paid-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    .popup {
+      background: #4caf50;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      display: none;
+      margin-top: 20px;
+      animation: fadeIn 0.5s forwards;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    .total-amt {
+      font-size: 22px;
+      margin-top: 10px;
+      color: #e65100;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>💰 Complete Your Payment</header>
+
+  <div class="container">
+    <div class="total-amt">Total Payable: ₹<span id="totalAmt"></span></div>
+
+    <img src="https://i.postimg.cc/mrfPSSdH/qr-code-sample.png" alt="QR Code" class="qr-img" id="qrImg">
+
+    <br>
+    <a class="upi-btn" id="upiBtn" href="#" target="_blank">Pay via UPI</a>
+
+    <div class="popup" id="popup">✅ Your order is successfully done. Please send screenshot on WhatsApp by clicking "I have paid" below.</div>
+
+    <br>
+    <a class="paid-btn" id="paidBtn" href="#" target="_blank">I Have Paid (Send WhatsApp)</a>
+  </div>
+
+  <script>
+    const popup = document.getElementById("popup");
+    const totalSpan = document.getElementById("totalAmt");
+    const paidBtn = document.getElementById("paidBtn");
+    const upiBtn = document.getElementById("upiBtn");
+    const qrImg = document.getElementById("qrImg");
+
+    // Fetch data from localStorage
+    const total = localStorage.getItem("totalAmount") || "0";
+    totalSpan.innerText = total;
+
+    const name = localStorage.getItem("customerName") || "Not provided";
+    const phone = localStorage.getItem("customerPhone") || "Not provided";
+    const address = localStorage.getItem("customerAddress") || "Not provided";
+    const landmark = localStorage.getItem("customerLandmark") || "Not provided";
+    const village = localStorage.getItem("villageName") || "Not provided";
+    const deliveryType = localStorage.getItem("deliveryType") || "Normal";
+
+    const cart = JSON.parse(localStorage.getItem("cartData")) || [];
+    let productDetails = "";
+    cart.forEach(item => {
+      productDetails += `\n• ${item.name} x${item.qty} @ ₹${item.price}`;
+    });
+
+    // Build WhatsApp message
+    const message = encodeURIComponent(`Hello, I have paid successfully. Here are my details:
+
+Name: ${name}
+Phone: ${phone}
+Address: ${address}
+Landmark: ${landmark}
+Village: ${village}
+Delivery Type: ${deliveryType}
+Total Payment: ₹${total}
+
+Products: ${productDetails}
+
+Please find my payment screenshot attached.`);
+
+    paidBtn.href = `https://wa.me/918307733681?text=${message}`;
+
+    // Set UPI link
+    const upiLink = `upi://pay?pa=8307733681@ptsbi&pn=Sab%20Kuch%20Ghar%20Tak&cu=INR&am=${total}`;
+    upiBtn.href = upiLink;
+    qrImg.onclick = () => {
+      window.location.href = upiLink;
+      showPopup();
+    };
+    upiBtn.onclick = () => {
+      showPopup();
+    };
+
+    function showPopup() {
+      popup.style.display = "block";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Product Details - Sab Kuch Ghar Tak</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #e8f5e9, #fff3e0);
+      color: #333;
+    }
+    header {
+      background: linear-gradient(90deg, #4caf50, #ff9800);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 25px;
+      font-size: 22px;
+      font-weight: bold;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      animation: glow 2s infinite alternate;
+    }
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #fff, 0 0 20px #ff9800; }
+      to { text-shadow: 0 0 20px #fff, 0 0 40px #4caf50; }
+    }
+    header .logo {
+      font-weight: bold;
+    }
+    header .cart-count {
+      background: #fff;
+      color: #333;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+    }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+    }
+    .gallery {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .gallery img {
+      height: 180px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      transition: transform 0.3s;
+    }
+    .gallery img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    h2 {
+      margin-top: 20px;
+    }
+    .price {
+      font-size: 20px;
+      margin: 10px 0;
+    }
+    .price del {
+      color: #888;
+      margin-right: 10px;
+    }
+    .desc {
+      margin: 15px 0;
+      line-height: 1.6;
+    }
+    .cart-btn {
+      background: linear-gradient(135deg, #ff5722, #ff7043);
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+    .cart-btn:hover {
+      background: linear-gradient(135deg, #e64a19, #ff5722);
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+    .popup {
+      background: #4caf50;
+      color: white;
+      padding: 12px;
+      border-radius: 6px;
+      display: none;
+      margin-top: 15px;
+      animation: fadeIn 0.5s forwards;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    .banners {
+      display: flex;
+      flex-wrap: wrap;
+      margin-top: 30px;
+      gap: 15px;
+      justify-content: center;
+    }
+    .banners a img {
+      width: 300px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: transform 0.3s;
+    }
+    .banners a img:hover {
+      transform: scale(1.05);
+    }
+    .back-btn {
+      display: inline-block;
+      margin-top: 25px;
+      text-decoration: none;
+      color: #ff5722;
+      font-weight: bold;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+    <header>
+  <div class="logo">Sab Kuch Ghar Tak</div>
+  <a href="cart.html" style="text-decoration: none;">
+    <div class="cart-count" id="cartCount">Cart (0)</div>
+  </a>
+</header>
+
+  </header>
+
+  <div class="container">
+    <div class="gallery">
+      <img src="images/mango1.png" alt="Photo 1">
+      <img src="images/mango2.png" alt="Photo 2">
+      <img src="images/mango3.png" alt="Photo 3">
+      <img src="images/mango4.png" alt="Photo 4">
+      <img src="images/mango5.png" alt="Photo 5">
+      <img src="images/mango6.png" alt="Photo 6">
+      <img src="images/mango7.png" alt="Photo 7">
+      <img src="images/mango8.png" alt="Photo 8">
+      <img src="images/mango9.png" alt="Photo 9">
+      <img src="images/mango10.png" alt="Photo 10">
+    </div>
+
+    <h2>Fresh Organic Mango</h2>
+    <div class="price"><del>₹120</del> ₹80</div>
+    <div class="desc">
+      These fresh organic mangoes are directly sourced from our farm, naturally sweet and chemical-free. Perfect for eating raw or using in shakes & desserts. Limited stock, hurry up!
+    </div>
+
+    <button class="cart-btn" onclick="addToCart()">Add to Cart</button>
+
+    <div class="popup" id="popup">✅ Product added to cart successfully!</div>
+
+    <div class="banners">
+      <a href="images/mango1.png"><img src="images/Banner 1.jpg" alt="Banner 1"></a>
+      <a href="https://example.com/banner2"><img src="images/banner2.jpg" alt="Banner 2"></a>
+    </div>
+
+    <a class="back-btn" href="home.html">← Back to Home</a>
+  </div>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem("cartData")) || [];
+
+    function updateCartCount() {
+      const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+      document.getElementById("cartCount").innerText = `Cart (${totalItems})`;
+    }
+
+    function addToCart() {
+      const product = {
+        name: "Fresh Organic Mango",
+        price: 80,
+        img: "https://via.placeholder.com/200x180?text=Photo+1",
+        qty: 1
+      };
+
+      const existing = cart.findIndex(item => item.name === product.name);
+      if (existing >= 0) {
+        cart[existing].qty += 1;
+      } else {
+        cart.push(product);
+      }
+
+      localStorage.setItem("cartData", JSON.stringify(cart));
+      updateCartCount();
+      showPopup();
+    }
+
+    function showPopup() {
+      const popup = document.getElementById("popup");
+      popup.style.display = "block";
+      setTimeout(() => {
+        popup.style.display = "none";
+      }, 2000);
+    }
+
+    updateCartCount();
+  </script>
+</body>
+</html>
